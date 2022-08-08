@@ -1,7 +1,13 @@
 package repository
 
+import (
+	"github.com/jackc/pgx/v4/pgxpool"
+	"saloon"
+)
+
 // Интерфейс для сущности регистрации и авторизации пользователя
 type Authorisation interface {
+	CreateUser(user saloon.User) (id int, err error)
 }
 
 // Интерфейс для сущности бармена
@@ -20,6 +26,8 @@ type Repository struct {
 }
 
 // Функция конструктор для Repository
-func NewRepository() *Repository {
-	return &Repository{}
+func NewRepository(db *pgxpool.Pool) *Repository {
+	return &Repository{
+		Authorisation: NewAuthPostgres(db),
+	}
 }

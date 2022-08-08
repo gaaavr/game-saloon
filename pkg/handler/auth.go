@@ -1,13 +1,36 @@
 package handler
 
-import routing "github.com/qiangxue/fasthttp-routing"
+import (
+	"encoding/json"
+	routing "github.com/qiangxue/fasthttp-routing"
+	"saloon"
+)
 
 // Метод для регистрации пользователя
-func (h *Handler) register(c *routing.Context) (err error) {
+func (h *Handler) register(ctx *routing.Context) (err error) {
+	var user saloon.User
+	encoder := json.NewEncoder(ctx)
+	encoder.SetIndent("", "\t")
+	data := ctx.Request.Body()
+	err = json.Unmarshal(data, &user)
+	if err != nil {
+		err = encoder.Encode(failAnswer{Message: err.Error()})
+		ctx.Response.SetStatusCode(500)
+		return
+	}
+	id, err := h.services.CreateUser(user)
+	if err != nil {
+		err = encoder.Encode(failAnswer{Message: err.Error()})
+		ctx.Response.SetStatusCode(500)
+		return
+	}
+	user.Id = id
+	err = encoder.Encode(user)
+	ctx.Response.SetStatusCode(201)
 	return
 }
 
 // Метод для входа пользователя
-func (h *Handler) login(c *routing.Context) (err error) {
+func (h *Handler) login(ctx *routing.Context) (err error) {
 	return
 }
