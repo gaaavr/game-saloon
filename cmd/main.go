@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"log"
@@ -36,7 +35,6 @@ func main() {
 	repo := repository.NewRepository(db)
 	services := service.NewService(repo)
 	handler := handler.NewHandler(services)
-	fmt.Println()
 	router := handler.Routing()
 	srv := new(saloon.Server)
 	if err := srv.Run(viper.GetString("port"), router.HandleRequest); err != nil {
