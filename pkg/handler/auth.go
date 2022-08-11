@@ -24,8 +24,7 @@ func (h *Handler) register(ctx *routing.Context) (err error) {
 		ctx.Response.SetStatusCode(500)
 		return
 	}
-	user.Id = id
-	err = encoder.Encode(user)
+	err = encoder.Encode(successRegister{id})
 	ctx.Response.SetStatusCode(201)
 	return
 }

@@ -31,9 +31,12 @@ func main() {
 		log.Fatalf("Ошибка подключения базы:%s", err.Error())
 	}
 	cache := cache.NewCache()
-	cache.RestoreCache(db)
+	err = cache.RestoreCache(db)
+	if err != nil {
+		log.Fatalf("Ошибка кеширования данных из базы:%s", err.Error())
+	}
 	repo := repository.NewRepository(db)
-	services := service.NewService(repo)
+	services := service.NewService(cache, repo)
 	handler := handler.NewHandler(services)
 	router := handler.Routing()
 	srv := new(saloon.Server)

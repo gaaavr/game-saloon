@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/jackc/pgx/v4 v4.17.0
+	github.com/joho/godotenv v1.4.0
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
 	github.com/spf13/viper v1.12.0
 	github.com/valyala/fasthttp v1.38.0
@@ -23,7 +24,6 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
 	github.com/jackc/pgtype v1.12.0 // indirect
 	github.com/jackc/puddle v1.2.1 // indirect
-	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/klauspost/compress v1.15.0 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect

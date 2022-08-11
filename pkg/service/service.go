@@ -2,6 +2,7 @@ package service
 
 import (
 	"saloon"
+	"saloon/pkg/cache"
 	"saloon/pkg/repository"
 )
 
@@ -26,8 +27,8 @@ type Service struct {
 }
 
 // Функция конструктор для Service
-func NewService(repository *repository.Repository) *Service {
+func NewService(cache *cache.Cache, repository *repository.Repository) *Service {
 	return &Service{
-		Authorisation: NewAuthService(repository.Authorisation),
+		Authorisation: NewAuthService(cache, repository.Authorisation),
 	}
 }
