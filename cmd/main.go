@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"log"
@@ -28,13 +29,14 @@ func main() {
 		viper.GetString("db.sslmode"),
 	})
 	if err != nil {
-		log.Fatalf("Ошибка подключения базы:%s", err.Error())
+		log.Fatalf("Ошибка подключения к базе данных:%s", err.Error())
 	}
 	cache := cache.NewCache()
 	err = cache.RestoreCache(db)
 	if err != nil {
 		log.Fatalf("Ошибка кеширования данных из базы:%s", err.Error())
 	}
+	fmt.Println(cache)
 	repo := repository.NewRepository(db)
 	services := service.NewService(cache, repo)
 	handler := handler.NewHandler(services)

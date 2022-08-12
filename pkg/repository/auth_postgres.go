@@ -1,25 +1,19 @@
 package repository
 
 import (
-	"context"
-	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"gorm.io/gorm"
 	"saloon"
 )
 
 type AuthPostgres struct {
-	db *pgxpool.Pool
+	db *gorm.DB
 }
 
-func NewAuthPostgres(db *pgxpool.Pool) *AuthPostgres {
+func NewAuthPostgres(db *gorm.DB) *AuthPostgres {
 	return &AuthPostgres{db: db}
 }
 
 func (a *AuthPostgres) CreateUser(user saloon.User) (id int, err error) {
-	query := fmt.Sprintf("INSERT INTO %s (username, password, role, ppm, money, dead, last_drink) values ($1, $2, $3, $4, $5, $6, $7) RETURNING id", usersTable)
-	row := a.db.QueryRow(context.Background(), query, user.Username, user.Password, user.Role, user.Ppm, user.Money, user.Dead, user.LastDrink)
-	if err = row.Scan(&id); err != nil {
-		return 0, err
-	}
-	return id, nil
+	a.db.Create(&user)
+	return user.Id, nil
 }

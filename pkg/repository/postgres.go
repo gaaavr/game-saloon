@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"context"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"saloon"
 )
 
 const (
@@ -21,16 +22,15 @@ type Config struct {
 }
 
 // NewPostgresDB возвращает пул для соединенияс бд
-func NewPostgresDB(cfg Config) (*pgxpool.Pool, error) {
-	var err error
-	dbpool, err := pgxpool.Connect(context.Background(), fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
+func NewPostgresDB(cfg Config) (*gorm.DB, error) {
+	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
-	err = dbpool.Ping(context.Background())
-	if err != nil {
+	if err = db.AutoMigrate(&saloon.User{}); err != nil {
 		return nil, err
 	}
-	return dbpool, nil
+	return db, nil
 }

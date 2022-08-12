@@ -1,14 +1,13 @@
 package cache
 
 import (
-	"context"
 	"errors"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"gorm.io/gorm"
 	"saloon"
 	"sync"
 )
 
-// Интерфейс, описывающий поведение кэша
+// AuthCache - мнтерфейс, описывающий поведение кэша при авторизации пользователя
 type AuthCache interface {
 	Put(user saloon.User)
 	IsExist(username string) bool
@@ -41,7 +40,6 @@ func (c *Cache) GetLen() int {
 func (c *Cache) Get(username string) (saloon.User, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-
 	user, ok := c.data[username]
 	if !ok {
 		return saloon.User{}, errors.New("the user isn't in cache")
@@ -62,28 +60,17 @@ func (c *Cache) Put(user saloon.User) {
 func (c *Cache) IsExist(username string) bool {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-
 	_, ok := c.data[username]
 
 	return ok
 }
 
 // RestoreCache заполняет кэш пользователями из базы данных
-func (c *Cache) RestoreCache(db *pgxpool.Pool) error {
-	rows, err := db.Query(context.Background(), "select * from users")
-	if err != nil {
-		return err
-	}
-
-	for rows.Next() {
-		var user saloon.User
-		err = rows.Scan(&user.Id, &user.Username, &user.Password, &user.Role, &user.Ppm, &user.Money, &user.Dead, &user.LastDrink)
-		if err != nil {
-			return err
-		}
-
+func (c *Cache) RestoreCache(db *gorm.DB) error {
+	var users []saloon.User
+	db.Find(&users)
+	for _, user := range users {
 		c.Put(user)
 	}
-
-	return rows.Err()
+	return nil
 }

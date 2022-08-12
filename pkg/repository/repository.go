@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/jackc/pgx/v4/pgxpool"
+	"gorm.io/gorm"
 	"saloon"
 )
 
@@ -26,7 +26,7 @@ type Repository struct {
 }
 
 // Функция конструктор для Repository
-func NewRepository(db *pgxpool.Pool) *Repository {
+func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{
 		Authorisation: NewAuthPostgres(db),
 	}
