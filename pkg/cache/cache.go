@@ -12,6 +12,7 @@ type AuthCache interface {
 	Put(user saloon.User)
 	IsExist(username string) bool
 	GetLen() int
+	Get(username string) (saloon.User, error)
 }
 
 // Cache - кэш для чтения данных из бд при запуске приложения

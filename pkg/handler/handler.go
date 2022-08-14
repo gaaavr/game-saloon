@@ -24,19 +24,23 @@ func (h *Handler) Routing() *routing.Router {
 		auth.Post("/register", h.register)
 		auth.Post("/login", h.login)
 	}
-	// Эндпоинты для бармена (показать список напитков и создать напиток)
-	barman := router.Group("/barman")
+	api := router.Group("/api", h.userIdentity)
 	{
-		barman.Get("/list")
-		barman.Post("/create")
+		// Эндпоинты для бармена (показать список напитков и создать напиток)
+		barman := api.Group("/barman")
+		{
+			barman.Get("/list", h.getDrinks)
+			barman.Post("/create", h.createDrink)
+		}
+
+		// Эндпоинты для клиента бара (показать данные клиента, показать список доступных напитков, купить напиток)
+		visitor := api.Group("/visitor")
+		{
+			visitor.Get("/me", h.getData)
+			visitor.Get("/list", h.getDrinks)
+			visitor.Post("/buy", h.buyDrink)
+		}
 	}
 
-	// Эндпоинты для клиента бара (показать данные клиента, показать список доступных напитков, купить напиток)
-	visitor := router.Group("/visitor")
-	{
-		visitor.Get("/me", h.getData)
-		visitor.Get("/list", h.getDrinks)
-		visitor.Post("/buy", h.buyDrink)
-	}
 	return router
 }

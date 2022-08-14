@@ -7,3 +7,7 @@ type failAnswer struct {
 type successRegister struct {
 	Id int `json:"id"`
 }
+
+type successLogin struct {
+	Token string `json:"token"`
+}

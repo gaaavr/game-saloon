@@ -8,6 +8,7 @@ import (
 // Интерфейс для сущности регистрации и авторизации пользователя
 type Authorisation interface {
 	CreateUser(user saloon.User) (id int, err error)
+	GetUser(username, password string) (saloon.User, error)
 }
 
 // Интерфейс для сущности бармена

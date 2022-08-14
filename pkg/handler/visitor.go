@@ -1,9 +1,11 @@
 package handler
 
-import routing "github.com/qiangxue/fasthttp-routing"
+import (
+	routing "github.com/qiangxue/fasthttp-routing"
+)
 
 // Метод для получения данных клиента о себе
-func (h *Handler) getData(c *routing.Context) (err error) {
+func (h *Handler) getData(ctx *routing.Context) (err error) {
 	return
 }
 
