@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"log"
@@ -36,7 +35,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Ошибка кеширования данных из базы:%s", err.Error())
 	}
-	fmt.Println(cache)
 	repo := repository.NewRepository(db)
 	services := service.NewService(cache, repo)
 	handler := handler.NewHandler(services)
