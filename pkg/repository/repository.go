@@ -13,7 +13,7 @@ type Authorisation interface {
 
 // Интерфейс для сущности бармена
 type Barman interface {
-	CreateDrink(drink saloon.Drink) (id int, err error)
+	CreateDrink(drink saloon.Drink)
 }
 
 // Интерфейс для сущности посетителя бара

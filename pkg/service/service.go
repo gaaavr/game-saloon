@@ -30,7 +30,7 @@ type Service struct {
 }
 
 // Функция конструктор для Service
-func NewService(cache *cache.Cache, repository *repository.Repository) *Service {
+func NewService(cache cache.Cache, repository *repository.Repository) *Service {
 	return &Service{
 		Authorisation: NewAuthService(cache, repository.Authorisation),
 	}

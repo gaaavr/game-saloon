@@ -20,11 +20,11 @@ type tokenClaims struct {
 	Username string `json:"user_name"`
 }
 type AuthService struct {
-	cache cache.AuthCache
+	cache cache.Cache
 	repo  repository.Authorisation
 }
 
-func NewAuthService(cache cache.AuthCache, repo repository.Authorisation) *AuthService {
+func NewAuthService(cache cache.Cache, repo repository.Authorisation) *AuthService {
 	return &AuthService{
 		repo:  repo,
 		cache: cache,

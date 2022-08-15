@@ -7,14 +7,6 @@ import (
 	"sync"
 )
 
-// AuthCache - мнтерфейс, описывающий поведение кэша при авторизации пользователя
-type AuthCache interface {
-	Put(user saloon.User)
-	IsExist(username string) bool
-	GetLen() int
-	Get(username string) (saloon.User, error)
-}
-
 // Cache - кэш для чтения данных из бд при запуске приложения
 type Cache struct {
 	data map[string]saloon.User
@@ -22,11 +14,20 @@ type Cache struct {
 }
 
 // NewCache возвращает новую структуру с инициализированным кэшом
-func NewCache() *Cache {
-	return &Cache{
+func NewCache(db *gorm.DB) (Cache, error) {
+	var users []saloon.User
+	err := db.Find(&users).Error
+	if err != nil {
+		return Cache{}, err
+	}
+	c := Cache{
 		data: make(map[string]saloon.User),
 		mu:   sync.RWMutex{},
 	}
+	for _, user := range users {
+		c.Put(user)
+	}
+	return c, nil
 }
 
 // GetLen возвращает количество пользователей
@@ -64,14 +65,4 @@ func (c *Cache) IsExist(username string) bool {
 	_, ok := c.data[username]
 
 	return ok
-}
-
-// RestoreCache заполняет кэш пользователями из базы данных
-func (c *Cache) RestoreCache(db *gorm.DB) error {
-	var users []saloon.User
-	db.Find(&users)
-	for _, user := range users {
-		c.Put(user)
-	}
-	return nil
 }
