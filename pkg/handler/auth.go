@@ -15,25 +15,20 @@ func (h *Handler) register(ctx *routing.Context) (err error) {
 	data := ctx.Request.Body()
 	err = json.Unmarshal(data, &user)
 	if err != nil {
-		err = encoder.Encode(response{
-			Description: err.Error(),
-		})
-		ctx.Response.SetStatusCode(500)
+		err = Response(ctx, 500, err.Error(), false)
+		return
+	}
+	if user.Username == "" || user.Password == "" {
+		err = Response(ctx, 400, "username и password не должны быть пустыми", false)
 		return
 	}
 	id, err := h.services.CreateUser(user)
 	if err != nil {
-		err = encoder.Encode(response{
-			Description: err.Error(),
-		})
-		ctx.Response.SetStatusCode(500)
+		err = Response(ctx, 500, err.Error(), false)
 		return
 	}
-	err = encoder.Encode(response{
-		Success:     true,
-		Description: fmt.Sprintf("Пользователь %s успешно зарегистрирован, id=%d, role=%s", user.Username, id, user.Role),
-	})
-	ctx.Response.SetStatusCode(201)
+	success := fmt.Sprintf("Пользователь %s успешно зарегистрирован, id=%d, role=%s", user.Username, id, user.Role)
+	err = Response(ctx, 201, success, true)
 	return
 }
 
@@ -45,24 +40,14 @@ func (h *Handler) login(ctx *routing.Context) (err error) {
 	data := ctx.Request.Body()
 	err = json.Unmarshal(data, &user)
 	if err != nil {
-		err = encoder.Encode(response{
-			Description: err.Error(),
-		})
-		ctx.Response.SetStatusCode(500)
+		err = Response(ctx, 500, err.Error(), false)
 		return
 	}
 	token, err := h.services.GenerateToken(user.Username, user.Password)
 	if err != nil {
-		err = encoder.Encode(response{
-			Description: err.Error(),
-		})
-		ctx.Response.SetStatusCode(401)
+		err = Response(ctx, 401, err.Error(), false)
 		return
 	}
-	err = encoder.Encode(response{
-		Success:     true,
-		Description: token,
-	})
-	ctx.Response.SetStatusCode(200)
+	err = Response(ctx, 200, token, true)
 	return
 }

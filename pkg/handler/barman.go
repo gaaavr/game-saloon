@@ -9,60 +9,43 @@ import (
 
 // Метод для создания напитка барменом
 func (h *Handler) createDrink(ctx *routing.Context) (err error) {
+	if ctx.Response.StatusCode() != 200 {
+		return
+	}
+	username := ctx.Get(keyCtx)
+	usernameStr, err := getUsername(username)
+	if err != nil {
+		err = Response(ctx, 500, err.Error(), false)
+		return
+	}
 	var drink saloon.Drink
 	encoder := json.NewEncoder(ctx)
 	encoder.SetIndent("", "\t")
-	username := ctx.Get("username")
-	if username == nil {
-		err = encoder.Encode(response{
-			Description: "не авторизован",
-		})
-		ctx.Response.SetStatusCode(401)
-		return
-	}
 	data := ctx.Request.Body()
 	err = json.Unmarshal(data, &drink)
 	if err != nil {
-		err = encoder.Encode(response{
-			Description: err.Error(),
-		})
-		ctx.Response.SetStatusCode(500)
+		err = Response(ctx, 500, err.Error(), false)
 		return
 	}
 	if drink.Name == "" {
-		err = encoder.Encode(response{
-			Description: "у напитка должно быть название",
-		})
-		ctx.Response.SetStatusCode(400)
+		err = Response(ctx, 400, "у напитка должно быть название", false)
 		return
 	}
 	if drink.Alcohol < 0 || drink.Alcohol > 100 {
-		err = encoder.Encode(response{
-			Description: "алкогольность должна быть от 0 до 100%",
-		})
-		ctx.Response.SetStatusCode(400)
+		err = Response(ctx, 400, "алкогольность должна быть от 0 до 100%", false)
 		return
 	}
 	if drink.Price < 0 {
-		err = encoder.Encode(response{
-			Description: "цена не может быть отрицательной",
-		})
-		ctx.Response.SetStatusCode(400)
+		err = Response(ctx, 400, "цена не может быть отрицательной", false)
 		return
 	}
 	id, err := h.services.CreateDrink(drink)
 	if err != nil {
-		err = encoder.Encode(response{
-			Description: err.Error(),
-		})
-		ctx.Response.SetStatusCode(500)
+		err = Response(ctx, 500, err.Error(), false)
 		return
 	}
-	err = encoder.Encode(response{
-		Success: true,
-		Description: fmt.Sprintf("Напиток %s успешно создан, id=%d, алкогольность=%d%%,  цена=%d",
-			drink.Name, id, drink.Alcohol, drink.Price),
-	})
-	ctx.Response.SetStatusCode(201)
+	success := fmt.Sprintf("%s успешно создал напиток %s с id %d, алкогольностью %d%%,  ценой %d",
+		usernameStr, drink.Name, id, drink.Alcohol, drink.Price)
+	err = Response(ctx, 201, success, true)
 	return
 }
