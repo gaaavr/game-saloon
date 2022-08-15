@@ -15,7 +15,10 @@ func NewAuthPostgres(db *gorm.DB) *AuthPostgres {
 }
 
 func (a *AuthPostgres) CreateUser(user saloon.User) (id int, err error) {
-	a.db.Create(&user)
+	err = a.db.Create(&user).Error
+	if err != nil {
+		return 0, err
+	}
 	return user.Id, nil
 }
 

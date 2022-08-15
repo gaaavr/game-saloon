@@ -13,7 +13,7 @@ type Authorisation interface {
 
 // Интерфейс для сущности бармена
 type Barman interface {
-	CreateDrink(drink saloon.Drink)
+	CreateDrink(drink saloon.Drink) (id int, err error)
 }
 
 // Интерфейс для сущности посетителя бара
@@ -31,5 +31,6 @@ type Repository struct {
 func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{
 		Authorisation: NewAuthPostgres(db),
+		Barman:        NewBarmanPostgres(db),
 	}
 }

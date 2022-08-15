@@ -33,5 +33,6 @@ type Service struct {
 func NewService(cache cache.Cache, repository *repository.Repository) *Service {
 	return &Service{
 		Authorisation: NewAuthService(cache, repository.Authorisation),
+		Barman:        NewBarmanService(cache, repository.Barman),
 	}
 }
