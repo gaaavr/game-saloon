@@ -13,8 +13,8 @@ CREATE TABLE users
 );
 CREATE TABLE drinks
 (
-    id serial unique not null,
-    name varchar(255) not null,
+    id serial not null unique,
+    name varchar(255) not null unique,
     price int,
     alcohol int
 );

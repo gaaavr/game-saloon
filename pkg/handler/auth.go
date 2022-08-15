@@ -31,7 +31,7 @@ func (h *Handler) register(ctx *routing.Context) (err error) {
 	}
 	err = encoder.Encode(response{
 		Success:     true,
-		Description: fmt.Sprintf("Пользователь %s успешно зарегистрирован, id=%d", user.Username, id),
+		Description: fmt.Sprintf("Пользователь %s успешно зарегистрирован, id=%d, role=%s", user.Username, id, user.Role),
 	})
 	ctx.Response.SetStatusCode(201)
 	return
