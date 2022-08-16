@@ -9,8 +9,9 @@ import (
 
 // Cache - кэш для чтения данных из бд при запуске приложения
 type Cache struct {
-	data map[string]saloon.User
-	mu   sync.RWMutex
+	users  map[string]saloon.User
+	drinks map[string]saloon.Drink
+	mu     sync.RWMutex
 }
 
 // NewCache возвращает новую структуру с инициализированным кэшом
@@ -20,29 +21,38 @@ func NewCache(db *gorm.DB) (Cache, error) {
 	if err != nil {
 		return Cache{}, err
 	}
+	var drinks []saloon.Drink
+	err = db.Find(&drinks).Error
+	if err != nil {
+		return Cache{}, err
+	}
 	c := Cache{
-		data: make(map[string]saloon.User),
-		mu:   sync.RWMutex{},
+		users:  make(map[string]saloon.User),
+		drinks: make(map[string]saloon.Drink),
+		mu:     sync.RWMutex{},
 	}
 	for _, user := range users {
-		c.Put(user)
+		c.PutUser(user)
+	}
+	for _, drink := range drinks {
+		c.PutDrink(drink)
 	}
 	return c, nil
 }
 
 // GetLen возвращает количество пользователей
-func (c *Cache) GetLen() int {
+func (c *Cache) GetUsersLen() int {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	l := len(c.data)
+	l := len(c.users)
 	return l
 }
 
-// Get возвращает данные пользователя из кэша по его username
-func (c *Cache) Get(username string) (saloon.User, error) {
+// GetUser возвращает данные пользователя из кэша по его username
+func (c *Cache) GetUser(username string) (saloon.User, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	user, ok := c.data[username]
+	user, ok := c.users[username]
 	if !ok {
 		return saloon.User{}, errors.New("the user isn't in cache")
 	}
@@ -50,19 +60,35 @@ func (c *Cache) Get(username string) (saloon.User, error) {
 	return user, nil
 }
 
-// Put добавляет юзера в кэш
-func (c *Cache) Put(user saloon.User) {
+// PutUser добавляет юзера в кэш
+func (c *Cache) PutUser(user saloon.User) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	c.data[user.Username] = user
+	c.users[user.Username] = user
 }
 
-// IsExist проверяет наличие пользователя в кэше по его username
-func (c *Cache) IsExist(username string) bool {
+// PutDrink добавляет напиток в кэш
+func (c *Cache) PutDrink(drink saloon.Drink) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.drinks[drink.Name] = drink
+}
+
+// UserIsExist проверяет наличие пользователя в кэше по его username
+func (c *Cache) UserIsExist(username string) bool {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	_, ok := c.data[username]
+	_, ok := c.users[username]
+
+	return ok
+}
+
+// DrinkIsExist проверяет наличие напитка в кэше по его name
+func (c *Cache) DrinkIsExist(name string) bool {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	_, ok := c.drinks[name]
 
 	return ok
 }

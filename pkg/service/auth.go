@@ -32,10 +32,10 @@ func NewAuthService(cache cache.Cache, repo repository.Authorisation) *AuthServi
 }
 
 func (a *AuthService) CreateUser(user saloon.User) (id int, err error) {
-	if a.cache.IsExist(user.Username) {
+	if a.cache.UserIsExist(user.Username) {
 		return 0, fmt.Errorf("такой username уже занят")
 	}
-	if a.cache.GetLen() == 0 {
+	if a.cache.GetUsersLen() == 0 {
 		user.Role = "barman"
 	} else {
 		user.Role = "visitor"
@@ -46,19 +46,19 @@ func (a *AuthService) CreateUser(user saloon.User) (id int, err error) {
 		return 0, err
 	}
 	user.Id = id
-	a.cache.Put(user)
+	a.cache.PutUser(user)
 	return id, err
 }
 
 func (a *AuthService) GenerateToken(username, password string) (t string, err error) {
 	var user saloon.User
-	if !a.cache.IsExist(username) {
+	if !a.cache.UserIsExist(username) {
 		user, err = a.repo.GetUser(username, password)
 		if err != nil {
 			return "", err
 		}
 	} else {
-		user, err = a.cache.Get(username)
+		user, err = a.cache.GetUser(username)
 		if err != nil {
 			return "", err
 		}

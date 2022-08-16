@@ -10,8 +10,6 @@ import (
 // Метод для регистрации пользователя
 func (h *Handler) register(ctx *routing.Context) (err error) {
 	var user saloon.User
-	encoder := json.NewEncoder(ctx)
-	encoder.SetIndent("", "\t")
 	data := ctx.Request.Body()
 	err = json.Unmarshal(data, &user)
 	if err != nil {
@@ -35,8 +33,6 @@ func (h *Handler) register(ctx *routing.Context) (err error) {
 // Метод для входа пользователя
 func (h *Handler) login(ctx *routing.Context) (err error) {
 	var user saloon.User
-	encoder := json.NewEncoder(ctx)
-	encoder.SetIndent("", "\t")
 	data := ctx.Request.Body()
 	err = json.Unmarshal(data, &user)
 	if err != nil {

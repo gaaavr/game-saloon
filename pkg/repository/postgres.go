@@ -21,7 +21,7 @@ type Config struct {
 	SSLMode  string
 }
 
-// NewPostgresDB возвращает пул для соединенияс бд
+// NewPostgresDB возвращает пул для соединения с бд
 func NewPostgresDB(cfg Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode)
@@ -29,7 +29,7 @@ func NewPostgresDB(cfg Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = db.AutoMigrate(&saloon.User{}); err != nil {
+	if err = db.AutoMigrate(&saloon.User{}, &saloon.Drink{}); err != nil {
 		return nil, err
 	}
 	return db, nil

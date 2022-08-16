@@ -18,9 +18,16 @@ func (h *Handler) createDrink(ctx *routing.Context) (err error) {
 		err = Response(ctx, 500, err.Error(), false)
 		return
 	}
+	role, err := h.services.CheckRole(usernameStr)
+	if err != nil {
+		err = Response(ctx, 400, err.Error(), false)
+		return
+	}
+	if role != "barman" {
+		err = Response(ctx, 400, "создавать напитки может только бармен", false)
+		return
+	}
 	var drink saloon.Drink
-	encoder := json.NewEncoder(ctx)
-	encoder.SetIndent("", "\t")
 	data := ctx.Request.Body()
 	err = json.Unmarshal(data, &drink)
 	if err != nil {
