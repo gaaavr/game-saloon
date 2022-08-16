@@ -46,3 +46,7 @@ func (b *BarmanService) CheckRole(username string) (role string, err error) {
 	}
 	return user.Role, nil
 }
+
+func (b *BarmanService) GetDrinks() (list []saloon.Drink) {
+	return b.cache.ListDrinks()
+}

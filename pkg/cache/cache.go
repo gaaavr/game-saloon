@@ -60,6 +60,18 @@ func (c *Cache) GetUser(username string) (saloon.User, error) {
 	return user, nil
 }
 
+// GetDrink возвращает данные напитка из кэша по его name
+func (c *Cache) GetDrink(name string) (saloon.Drink, error) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	drink, ok := c.drinks[name]
+	if !ok {
+		return saloon.Drink{}, errors.New("the drink isn't in cache")
+	}
+
+	return drink, nil
+}
+
 // PutUser добавляет юзера в кэш
 func (c *Cache) PutUser(user saloon.User) {
 	c.mu.Lock()
@@ -91,4 +103,16 @@ func (c *Cache) DrinkIsExist(name string) bool {
 	_, ok := c.drinks[name]
 
 	return ok
+}
+
+// ListDrinks проверяет наличие напитка в кэше по его name
+func (c *Cache) ListDrinks() []saloon.Drink {
+	list := make([]saloon.Drink, 0, len(c.drinks))
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	for _, drink := range c.drinks {
+		list = append(list, drink)
+	}
+
+	return list
 }

@@ -17,10 +17,13 @@ type Authorisation interface {
 type Barman interface {
 	CreateDrink(drink saloon.Drink) (id int, err error)
 	CheckRole(username string) (role string, err error)
+	GetDrinks() (list []saloon.Drink)
 }
 
 // Интерфейс для сущности посетителя бара
 type Visitor interface {
+	GetData(username string) (saloon.VisitorData, error)
+	BuyDrink(username, drinkName string) error
 }
 
 // Собираем все методы, отвечающие за бизнес-логику в одном месте
@@ -35,5 +38,6 @@ func NewService(cache cache.Cache, repository *repository.Repository) *Service {
 	return &Service{
 		Authorisation: NewAuthService(cache, repository.Authorisation),
 		Barman:        NewBarmanService(cache, repository.Barman),
+		Visitor:       NewVisitorService(cache, repository.Visitor),
 	}
 }

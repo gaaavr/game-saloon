@@ -3,11 +3,16 @@ package handler
 import (
 	"encoding/json"
 	routing "github.com/qiangxue/fasthttp-routing"
+	"saloon"
 )
 
 type response struct {
 	Success     bool   `json:"success"`
 	Description string `json:"description"`
+}
+
+type drinks struct {
+	List []saloon.Drink `json:"List"`
 }
 
 func Response(ctx *routing.Context, statusCode int, description string, status bool) (err error) {

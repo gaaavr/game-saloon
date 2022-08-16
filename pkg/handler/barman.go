@@ -56,3 +56,17 @@ func (h *Handler) createDrink(ctx *routing.Context) (err error) {
 	err = Response(ctx, 201, success, true)
 	return
 }
+
+// Метод для получения списка напитков
+func (h *Handler) getDrinks(ctx *routing.Context) (err error) {
+	if ctx.Response.StatusCode() != 200 {
+		return
+	}
+	listDrinks := h.services.GetDrinks()
+	encoder := json.NewEncoder(ctx)
+	encoder.SetIndent("", "\t")
+	ctx.Response.SetStatusCode(200)
+	return encoder.Encode(drinks{
+		List: listDrinks,
+	})
+}

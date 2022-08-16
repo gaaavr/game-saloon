@@ -18,6 +18,7 @@ type Barman interface {
 
 // Интерфейс для сущности посетителя бара
 type Visitor interface {
+	BuyDrink(user saloon.User) (err error)
 }
 
 // Собираем все методы, отвечающие за работу с бд в одном месте
@@ -32,5 +33,6 @@ func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{
 		Authorisation: NewAuthPostgres(db),
 		Barman:        NewBarmanPostgres(db),
+		Visitor:       NewVisitorPostgres(db),
 	}
 }
