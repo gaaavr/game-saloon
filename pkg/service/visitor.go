@@ -2,7 +2,7 @@ package service
 
 import (
 	"errors"
-	"fmt"
+	"math"
 	"saloon"
 	"saloon/pkg/cache"
 	"saloon/pkg/repository"
@@ -41,7 +41,7 @@ func (v *VisitorService) BuyDrink(username, drinkName string) error {
 		return err
 	}
 	if user.Dead {
-		return errors.New("посетитель ранее напился до смерти")
+		return errors.New(username + " уже напился до смерти")
 	}
 	drink, err := v.cache.GetDrink(drinkName)
 	if err != nil {
@@ -50,10 +50,24 @@ func (v *VisitorService) BuyDrink(username, drinkName string) error {
 	if user.Money < drink.Price {
 		return errors.New("не хватает денег на покупку")
 	}
-	user.Money -= drink.Price
-	user.Ppm += drink.Alcohol % 100
-	fmt.Println(time.Since(user.LastDrink))
-	user.LastDrink = time.Now()
+	ppm := math.Trunc(user.Ppm*100)/100 + math.Trunc(float64(drink.Alcohol))/100
+	if user.LastDrink.IsZero() {
+		user.Money -= drink.Price
+		user.Ppm = math.Round(ppm*100) / 100
+		user.LastDrink = time.Now()
+	} else {
+		diffHours := math.Trunc(time.Since(user.LastDrink).Hours())
+		if user.Ppm < diffHours {
+			user.Ppm = diffHours
+		}
+		user.Ppm -= diffHours
+		user.Money -= drink.Price
+		user.Ppm = math.Round(ppm*100) / 100
+		user.LastDrink = time.Now()
+	}
+	if user.Ppm >= 6 {
+		user.Dead = true
+	}
 	err = v.repo.BuyDrink(user)
 	if err != nil {
 		return err

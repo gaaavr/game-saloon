@@ -66,6 +66,12 @@ func (h *Handler) buyDrink(ctx *routing.Context) (err error) {
 		return
 	}
 	err = h.services.BuyDrink(usernameStr, drink.Name)
-	fmt.Println(err)
+	if err != nil {
+		err = Response(ctx, 500, err.Error(), false)
+		return
+	}
+	success := fmt.Sprintf("%s выпил напиток %s",
+		usernameStr, drink.Name)
+	err = Response(ctx, 200, success, true)
 	return
 }

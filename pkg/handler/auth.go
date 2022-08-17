@@ -20,12 +20,12 @@ func (h *Handler) register(ctx *routing.Context) (err error) {
 		err = Response(ctx, 400, "username и password не должны быть пустыми", false)
 		return
 	}
-	id, err := h.services.CreateUser(user)
+	role, err := h.services.CreateUser(user)
 	if err != nil {
 		err = Response(ctx, 500, err.Error(), false)
 		return
 	}
-	success := fmt.Sprintf("Пользователь %s успешно зарегистрирован, id=%d, role=%s", user.Username, id, user.Role)
+	success := fmt.Sprintf("Пользователь %s с ролью %s успешно зарегистрирован", user.Username, role)
 	err = Response(ctx, 201, success, true)
 	return
 }

@@ -8,7 +8,7 @@ import (
 
 // Интерфейс для сущности регистрации и авторизации пользователя
 type Authorisation interface {
-	CreateUser(user saloon.User) (id int, err error)
+	CreateUser(user saloon.User) (string, error)
 	GenerateToken(username, password string) (string, error)
 	CheckToken(token string) (username string, err error)
 }
