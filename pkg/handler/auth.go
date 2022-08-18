@@ -7,7 +7,6 @@ import (
 	"saloon"
 )
 
-// Метод для регистрации пользователя
 func (h *Handler) register(ctx *routing.Context) (err error) {
 	var user saloon.User
 	data := ctx.Request.Body()
@@ -30,7 +29,6 @@ func (h *Handler) register(ctx *routing.Context) (err error) {
 	return
 }
 
-// Метод для входа пользователя
 func (h *Handler) login(ctx *routing.Context) (err error) {
 	var user saloon.User
 	data := ctx.Request.Body()

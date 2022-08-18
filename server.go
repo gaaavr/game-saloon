@@ -1,7 +1,6 @@
 package saloon
 
 import (
-	"context"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"time"
@@ -22,6 +21,6 @@ func (s *Server) Run(port string, handler fasthttp.RequestHandler) error {
 	return s.httpServer.ListenAndServe(":" + port)
 }
 
-func (s *Server) Shutdown(ctx context.Context) error {
-	return s.Shutdown(ctx)
+func (s *Server) Shutdown() error {
+	return s.httpServer.Shutdown()
 }
