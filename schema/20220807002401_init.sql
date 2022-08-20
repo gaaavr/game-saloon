@@ -6,7 +6,7 @@ CREATE TABLE users
     username varchar(255) not null unique,
     password varchar(255) not null,
     role varchar(255) not null,
-    ppm int,
+    ppm real,
     money int,
     dead boolean,
     last_drink timestamp
