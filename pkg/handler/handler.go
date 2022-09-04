@@ -5,12 +5,12 @@ import (
 	"saloon/pkg/service"
 )
 
-// Структура для работы сервера с хранилищем данных
+// Handler - структура для работы сервера с хранилищем данных
 type Handler struct {
 	services *service.Service
 }
 
-// Функция конструктор для Handler
+// NewHandler - функция конструктор для Handler
 func NewHandler(services *service.Service) *Handler {
 	return &Handler{services: services}
 }
